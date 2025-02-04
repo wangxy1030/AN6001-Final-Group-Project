@@ -1,0 +1,22 @@
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Company Information</h2>
+        <form action="/introduction" method="post">
+            <p><input type="submit" value="Company Introductioin"></p>
+        </form>
+        <form action="/financial_info" method="post">
+            <p><input type="submit" value="Financial Information"></p>
+        </form>
+        <form action="/stock_info" method="post">
+            <p><input type="submit" value="Stock Information"></p>
+        </form>
+        <form action="/homepage" method="post">
+            <p><input type="submit" value="Main"></p>
+        </form>
+    </div>
+</body>
