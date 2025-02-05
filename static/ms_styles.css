@@ -108,8 +108,8 @@ button:hover {
 }
 
 .news-item a {
-    color: #5f130f;
-    text-decoration: none;
+    color: #7d1714;
+    text-decoration: underline;
 }
 
 .news-item a:hover {
