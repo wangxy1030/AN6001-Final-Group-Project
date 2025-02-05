@@ -125,7 +125,6 @@ def ms():
 
     if request.method == 'POST':
         stock_code = request.form.get("ticker", stock_code)
-        stock= yf.Ticker(stock_code)
     news_items = market_sentiment.get_news_data(stock_code)
     df = market_sentiment.process_news_data(news_items, stock_code)
     if df.empty:
@@ -160,6 +159,7 @@ def investment_result():
     amount=float(request.form.get("q"))
     quantity=round(amount/currentPrice,2)
     return render_template("investment_result.html",amount=amount,company_name=company_name,quantity=quantity)
+
 if __name__ == "__main__":
     fund.run()
 
