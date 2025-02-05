@@ -93,8 +93,9 @@ th, td {
 
 th {
     background-color: #CBB2AB;
-}
+    text-align: center;
 
+}
 
 @media (max-width: 768px) {
     .container {
@@ -112,4 +113,11 @@ th {
     p {
         font-size: 15px;
     }
+}
+
+.logo-img {
+    max-width: 200px;
+    height: auto;
+    display: block;
+    margin: auto
 }

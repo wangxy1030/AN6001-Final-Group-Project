@@ -5,6 +5,8 @@ import google.generativeai as genai
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import os
+import io
+import base64
 from prettytable import PrettyTable
 import market_sentiment
 
@@ -14,14 +16,13 @@ model=genai.GenerativeModel('gemini-1.5-flash')
 fund=Flask(__name__)
 fund.secret_key="ccmccxbnhh"
 
+
 def plot_stock_price(stock_code):
-    stock=yf.Ticker(stock_code)
-    hist=stock.history(period="1y")
+    stock = yf.Ticker(stock_code)
+    hist = stock.history(period="1y")
     if hist.empty:
         return None
-    img_dir = "static"
-    if not os.path.exists(img_dir):
-        os.makedirs(img_dir)
+    img = io.BytesIO()
     plt.figure(figsize=(10, 5))
     plt.plot(hist.index, hist['Close'], label=f"{stock_code} Closing Price", color='blue')
     plt.title(f"{stock_code} Stock Price (Last 1 Year)")
@@ -31,10 +32,11 @@ def plot_stock_price(stock_code):
     plt.grid(True)
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
     plt.xticks(rotation=45)
-    img_path = os.path.join(img_dir, f"{stock_code}_stock.png")
-    plt.savefig(img_path)
+    plt.savefig(img, format="png")
     plt.close()
-    return f"/{img_path}" 
+    img.seek(0)
+    img_base64 = base64.b64encode(img.getvalue()).decode('utf-8')
+    return f"data:image/png;base64,{img_base64}"
 
 def get_basic_company_info(stock_code):
     stock=yf.Ticker(stock_code)
@@ -96,22 +98,31 @@ def financial_info():
 
 @fund.route("/stock_info", methods=["GET", "POST"])
 def stock_info():
-    stock_code=session.get("stock_code")
-    stock=yf.Ticker(stock_code)
-    company_name=stock.info.get("longName","N/A")
-    stock_info= {
-        "Sector": stock.info.get("sector","N/A"),
-        "Market Price": stock.info.get("currentPrice","N/A"),
-        "Day High": stock.info.get("dayHigh","N/A"),
-        "Day Low": stock.info.get("dayLow","N/A"),
-        "Last Close Price": stock.info.get("previousClose","N/A"),
-        "Open Price": stock.info.get("open","N/A"),
-        "ROA": stock.info.get("returnOnAssets","N/A"),
-        "ROE": stock.info.get("returnOnEquity","N/A")}
+    stock_code = session.get("stock_code")
+    stock = yf.Ticker(stock_code)
+    company_name = stock.info.get("longName", "N/A")
+    
+    stock_info = {
+        "Sector": stock.info.get("sector", "N/A"),
+        "Market Price": stock.info.get("currentPrice", "N/A"),
+        "Day High": stock.info.get("dayHigh", "N/A"),
+        "Day Low": stock.info.get("dayLow", "N/A"),
+        "Last Close Price": stock.info.get("previousClose", "N/A"),
+        "Open Price": stock.info.get("open", "N/A"),
+        "ROA": stock.info.get("returnOnAssets", "N/A"),
+        "ROE": stock.info.get("returnOnEquity", "N/A")
+    }
+    
     stock_df = pd.DataFrame.from_dict(stock_info, orient="index", columns=["Value"])
-    stock_html=stock_df.to_html(classes='table table-bordered table-striped')
-    img_path=plot_stock_price(stock_code)
-    return (render_template("stock_info.html",company_name=company_name,stock_code=stock_code,stock_info=stock_html,img=img_path))
+    stock_html = stock_df.to_html(classes='table table-bordered table-striped')
+    
+    img_base64 = plot_stock_price(stock_code)
+    
+    return render_template("stock_info.html", 
+                           company_name=company_name, 
+                           stock_code=stock_code, 
+                           stock_info=stock_html, 
+                           img=img_base64)
 
 @fund.route("/homepage", methods=["GET", "POST"])
 def homepage():
