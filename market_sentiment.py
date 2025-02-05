@@ -10,7 +10,6 @@ BASE_URL = 'https://www.alphavantage.co/query'
 FUNCTION = 'NEWS_SENTIMENT'
 
 def get_news_data(ticker):
-    """从 Alpha Vantage API 获取指定股票的新闻数据"""
     params = {
         'function': FUNCTION,
         'tickers': ticker,
@@ -21,14 +20,13 @@ def get_news_data(ticker):
         response = requests.get(BASE_URL, params=params)
         if response.status_code == 200:
             news_data = response.json()
-            return news_data.get('feed', [])  # 只返回新闻条目
+            return news_data.get('feed', [])
         else:
             return []
     except requests.RequestException:
         return []
 
 def process_news_data(news_items, ticker):
-    """处理新闻数据，提取相关字段并转换为 DataFrame"""
     titles, published_dates, urls, sentiment_labels, sentiment_scores, relevance_scores = [], [], [], [], [], []
 
     for news in news_items:
@@ -53,7 +51,6 @@ def process_news_data(news_items, ticker):
     return df
 
 def plot_scores(df):
-    """绘制 Sentiment Relevance 散点图，并返回 base64 图片"""
     if df.empty:
         return None
 
@@ -75,8 +72,6 @@ def plot_scores(df):
     ax.axvline(x=0, color='black', linestyle='--', linewidth=1)
     ax.spines['right'].set_color('none')
     ax.spines['top'].set_color('none')
-
-    # 转换为 base64 图片
     img = io.BytesIO()
     plt.savefig(img, format='png')
     img.seek(0)

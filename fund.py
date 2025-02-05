@@ -9,8 +9,7 @@ import io
 import base64
 from prettytable import PrettyTable
 import market_sentiment
-
-api=os.getenv("makersuite")
+api = "AIzaSyCmzFIXPikSrximyftTJBJMkjkJ0ViqBpc"
 genai.configure(api_key=api)
 model=genai.GenerativeModel('gemini-1.5-flash')
 fund=Flask(__name__)
