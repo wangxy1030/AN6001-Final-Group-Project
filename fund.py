@@ -23,7 +23,7 @@ def plot_stock_price(stock_code):
         return None
     img = io.BytesIO()
     plt.figure(figsize=(10, 5))
-    plt.plot(hist.index, hist['Close'], label=f"{stock_code} Closing Price", color='blue')
+    plt.plot(hist.index, hist['Close'], label=f"{stock_code} Closing Price", color="#5f130f")
     plt.title(f"{stock_code} Stock Price (Last 1 Year)")
     plt.xlabel("Date")
     plt.ylabel("Closing Price (USD)")

@@ -17,6 +17,8 @@ body {
     max-width: 600px;
     width: 100%;
     text-align: center;
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 .image-class {
@@ -38,7 +40,7 @@ form {
 }
 
 input[type="submit"] {
-    background-color: #7D1713;
+    background-color: #5f130f;
     color: white;
     padding: 12px 24px;
     border: none;
@@ -60,21 +62,21 @@ input, button {
 }
 
 button {
-    background-color: #7D1713;
+    background-color: #5f130f;
     color: white;
     border: none;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #3C110F;
+    background-color: #5f130f;
 }
 
 
 p {
     margin-top: 20px;
     font-size: 16px;
-    color: #7D1713;
+    color: #5f130f;
 }
 
 table {
@@ -87,7 +89,7 @@ table {
 
 th, td {
     padding: 10px 15px;
-    border: 1px solid #7D1713;
+    border: 1px solid #5f130f;
 }
 
 th {

@@ -1,17 +1,25 @@
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='ms_styles.css') }}">
+    <title>Basic Stock Information of {{ company_name }}</title>
 </head>
 
 <body>
-    <div>
-        <h4>Basic Stock Information of {{ company_name }}</h4>
-        <table>{{ stock_info | safe }}</table>
+    <div class="container">
+        <h2>Basic Stock Information of {{ company_name }}</h2>
+
+        <div class="stock-info">
+            <table>{{ stock_info | safe }}</table>
+        </div>
+
         {% if img %}
+            <h3>Stock Trend</h3>
             <img src="{{ img }}" class="image-class">
         {% else %}
-            <p>Stock trend is not available</p>
+            <p class="error-message">Stock trend is not available</p>
         {% endif %}
+
         <form action="/info" method="post">
             <p><input type="submit" value="Company Information"></p>
         </form>
