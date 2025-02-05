@@ -6,10 +6,11 @@
 <body>
     <div class="container">
         <h2>Make Investment</h2>
-        <p>Current stock price of {{company_name}} is {{currentPrice}}</p>
-        <p>Please enter the amount you want to invest:</p>
+        <h3>Current stock price of {{company_name}} is {{currentPrice}} USD</h3>
+        <h3>Please enter the amount you want to invest:</h3>
         <form action="/investment_result" method="post">
             <p><input type="text" name="q"></p>
+            <h3>USD</h3>
             <p><input type="submit" value="Confirm"></p>
         </form>
         <form action="/homepage" method="post">

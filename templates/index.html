@@ -5,11 +5,15 @@
 
 <body>
     <div class="container">
-        <h2>火球基金</h2>
+        <h2>Fireball Capital</h2>
         <p>Please enter stock code:</p>
-        <form action="/main" method="post">
-            <p><input type="text" name="q"></p>
-            <p><input type="submit" value="Enter"></p>
+        <form action="/" method="post">
+            <p><input type="text" name="q" placeholder="Enter Stock Ticker" required></p >
+            <p><input type="submit" value="Enter"></p >
         </form>
+
+        {% if error %}
+            <p class="error-message" style="color: red; font-weight: bold;">{{ error }}</p >
+        {% endif %}
     </div>
 </body>

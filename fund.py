@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request,session
+from flask import Flask, render_template, request, session, redirect, url_for
 import yfinance as yf
 import pandas as pd
 import google.generativeai as genai
@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import os
 from prettytable import PrettyTable
+import market_sentiment
+
 api=os.getenv("makersuite")
 genai.configure(api_key=api)
 model=genai.GenerativeModel('gemini-1.5-flash')
@@ -47,21 +49,27 @@ def get_basic_company_info(stock_code):
     table.add_row(["Website",stock.info.get('website', 'N/A')])
     return table.get_html_string()
 
+
 @fund.route("/", methods=["GET", "POST"])
 def index():
-    return render_template("index.html")
-
-@fund.route("/main", methods=["GET", "POST"])
-def main():
     if request.method == "POST":
         stock_code = request.form.get("q", "").upper()
         stock = yf.Ticker(stock_code)
         if stock.info and stock.info.get("symbol"):
             session["stock_code"] = stock_code
-            return render_template("main.html")
+            return redirect(url_for("main"))
         else:
-            return render_template("main.html", error="The stock code you entered is invalid.")
-    return render_template("main.html")
+            return render_template("index.html", error="The stock code you entered is invalid.")
+
+    return render_template("index.html")
+
+@fund.route("/main", methods=["GET"])
+def main():
+    stock_code = session.get("stock_code") 
+    if not stock_code:
+        return redirect(url_for("index"))
+    return render_template("main.html", stock_code=stock_code)
+
 @fund.route("/info", methods=["GET", "POST"])
 def info():
     return render_template("info.html")
@@ -109,9 +117,21 @@ def stock_info():
 def homepage():
     return render_template("main.html")
 
-@fund.route("/ms", methods=["GET", "POST"])
+@fund.route('/ms', methods=['GET', 'POST'])
 def ms():
-    return render_template("ms.html")
+    stock_code = session.get("stock_code")
+    if not stock_code:
+        return render_template("ms.html", error="No stock selected.")
+
+    if request.method == 'POST':
+        stock_code = request.form.get("ticker", stock_code)
+        stock= yf.Ticker(stock_code)
+    news_items = market_sentiment.get_news_data(stock_code)
+    df = market_sentiment.process_news_data(news_items, stock_code)
+    if df.empty:
+        return render_template("ms.html", ticker=stock_code, error="No news found for " + stock_code)
+    plot_url = market_sentiment.plot_scores(df)
+    return render_template("ms.html", ticker=stock_code, news=df.to_dict(orient="records"), plot_url=plot_url)
 
 @fund.route("/genAI", methods=["GET", "POST"])
 def genAI():
@@ -132,14 +152,14 @@ def investment():
     return render_template("investment.html",currentPrice=currentPrice,company_name=company_name)
 
 @fund.route("/investment_result", methods=["GET", "POST"])
-def investment():
+def investment_result():
     stock_code=session.get("stock_code")
     stock=yf.Ticker(stock_code)
     company_name=stock.info.get("longName","N/A")
     currentPrice=stock.info.get("currentPrice","N/A")
-    amount=request.form.get("q")
-    quantity=amount/currentPrice
-    return (render_template("investment.html",amount=amount,company_name=company_name,quantity=quantity))
+    amount=float(request.form.get("q"))
+    quantity=round(amount/currentPrice,2)
+    return render_template("investment_result.html",amount=amount,company_name=company_name,quantity=quantity)
 if __name__ == "__main__":
     fund.run()
 

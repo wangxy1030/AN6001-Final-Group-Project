@@ -1,13 +1,33 @@
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='ms_styles.css') }}">
+    <title>News Sentiment Analysis</title>
 </head>
-
 <body>
     <div class="container">
-        <h2>Sentiment Score {{r}}</h2>
-        <form action="/main" method="post">
-            <p><input type="submit" value="Main"></p>
-        </form>
+        <h2>Market Sentiment</h2>
+
+        {% if ticker %}
+            <h3>Latest News for {{ ticker }}</h3>
+            <div class="news-list">
+                {% for item in news %}
+                    <div class="news-item">
+                    <p><strong>{{ item['Published Date'] }}</strong></p >
+                    <p>{{ item['Title'] }}</p >
+                    <a href="{{ item['URL'] }}" target="_blank">Read more...</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% if plot_url %}
+            <h3>Sentiment vs Relevance</h3>
+            <img src="data:image/png;base64,{{ plot_url }}" class="image-class">
+        {% endif %}
+        {% endif %}
+
+        <!-- 返回按钮 -->
+        <div class="back-button">
+            <a href="/homepage" class="btn">Back to Main Function</a >
+        </div>
     </div>
 </body>
