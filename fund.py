@@ -148,19 +148,26 @@ def ms():
     plot_url = market_sentiment.plot_scores(df)
     return render_template("ms.html", ticker=stock_code, news=df.to_dict(orient="records"), plot_url=plot_url)
 
+@fund.route("/genAI_index", methods=["GET", "POST"])
+def genAI_index():
+    return render_template("genAI_index.html", r=None)
+
+@fund.route("/genAI_result_index", methods=["POST"])
+def genAI_result_index():
+    q = request.form.get("q")
+    r = model.generate_content(q).candidates[0].content.parts[0].text 
+    r_html = markdown.markdown(r)
+    return render_template("genAI_index.html", r=r_html)
+
 @fund.route("/genAI", methods=["GET", "POST"])
 def genAI():
     return render_template("genAI.html", r=None)
 
 @fund.route("/genAI_result", methods=["POST"])
 def genAI_result():
-    q = request.form.get("q")  # 获取用户输入的问题
-    r = model.generate_content(q).candidates[0].content.parts[0].text  # 获取生成的回答
-
-    # 将AI回复的纯文本转换为HTML格式
+    q = request.form.get("q")
+    r = model.generate_content(q).candidates[0].content.parts[0].text 
     r_html = markdown.markdown(r)
-
-    # 渲染页面并传递回答r_html
     return render_template("genAI.html", r=r_html)
 
 @fund.route("/investment", methods=["GET", "POST"])
@@ -183,4 +190,3 @@ def investment_result():
 
 if __name__ == "__main__":
     fund.run()
-

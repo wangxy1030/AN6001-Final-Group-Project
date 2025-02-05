@@ -10,12 +10,15 @@
         </div>
         <h2>Fireball Capital</h2>
         <form action="/" method="post">
-            <p><input type="text" name="q" placeholder="Please enter the stock code" required></p >
-            <p><input type="submit" value="Enter"></p >
+            <p><input type="text" name="q" placeholder="Please enter the stock code" required></p>
+            <p><input type="submit" value="Enter"></p>
         </form>
 
         {% if error %}
-            <p class="error-message" style="color: red; font-weight: bold;">{{ error }}</p >
+            <p class="error-message" style="color: red; font-weight: bold;">{{ error }}</p>
         {% endif %}
+
+        <hr>
+        <p>Don't know the stock code? <a href="/genAI_index" style="color: #7d1714; text-decoration: underline;">Ask GenAI Assistant!</a></p>
     </div>
 </body>

@@ -1,0 +1,25 @@
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='ai_styles.css')}}">
+    <title>GenAI Assistant</title>
+</head>
+
+<body>
+    <div class="container">
+        <h2>GenAI Assistant</h2>
+        <form action="/genAI_result_index" method="post">
+            <p><input type="text" name="q" placeholder="Please enter your question" required></p>
+            <p><input type="submit" value="Enter"></p>
+        </form>
+
+        {% if r %}
+            <hr>
+            <h4>Reply:</h4>
+            <div>{{ r|safe }}</div>
+        {% endif %}
+
+        <form action="/" method="get">
+            <p><input type="submit" value="Back"></p>
+        </form>
+    </div>
+</body>
