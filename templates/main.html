@@ -6,8 +6,9 @@
 <body>
     <div class="container">
         <h2>Main Function</h2>
+        <h3>Currently Company: {{ company_name }}</h3>
         <form action="/info" method="post">
-            <p><input type="submit" value="Company Information"></p>
+            <p><input type="submit" value="{{ company_name }} Information"></p>
         </form>
         <form action="/ms" method="post">
             <p><input type="submit" value="Market Sentiment"></p>

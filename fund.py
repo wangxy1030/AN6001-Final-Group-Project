@@ -70,31 +70,40 @@ def main():
     stock_code = session.get("stock_code") 
     if not stock_code:
         return redirect(url_for("index"))
-    return render_template("main.html", stock_code=stock_code)
+    stock = yf.Ticker(stock_code)
+    company_name = stock.info.get("longName", "N/A")
+    return render_template("main.html", stock_code=stock_code, company_name=company_name)
 
 @fund.route("/info", methods=["GET", "POST"])
 def info():
-    return render_template("info.html")
+    stock_code = session.get("stock_code")
+    if not stock_code:
+        return redirect(url_for("index"))
+    
+    stock = yf.Ticker(stock_code)
+    company_name = stock.info.get("longName", "N/A")
+    
+    return render_template("info.html", company_name=company_name)
 
 @fund.route("/introduction", methods=["GET", "POST"])
 def introduction():
-    stock_code=session.get("stock_code")
-    stock=yf.Ticker(stock_code)
-    company_name=stock.info.get("longName","N/A")
+    stock_code = session.get("stock_code")
+    stock = yf.Ticker(stock_code)
+    company_name = stock.info.get("longName", "N/A")
     company_info = get_basic_company_info(stock_code)
-    return (render_template("introduction.html",company_name=company_name,company_info=company_info))
+    return render_template("introduction.html", company_name=company_name, company_info=company_info)
 
 @fund.route("/financial_info", methods=["GET", "POST"])
 def financial_info():
-    stock_code=session.get("stock_code")
-    stock=yf.Ticker(stock_code)
-    company_name=stock.info.get("longName","N/A")
-    financial_info= pd.concat([
-                    stock.balance_sheet.loc[["Total Assets","Total Debt","Stockholders Equity"]],
-                    stock.financials.loc[["Total Revenue","EBIT","Net Income","Basic EPS"]],
-                    stock.cash_flow.loc[["Free Cash Flow","Financing Cash Flow","Investing Cash Flow","Operating Cash Flow"]]])
-    financial_info=financial_info.to_html(classes='table table-bordered table-striped')
-    return (render_template("financial_info.html",company_name=company_name,financial_info=financial_info))
+    stock_code = session.get("stock_code")
+    stock = yf.Ticker(stock_code)
+    company_name = stock.info.get("longName", "N/A")
+    financial_info = pd.concat([
+                    stock.balance_sheet.loc[["Total Assets", "Total Debt", "Stockholders Equity"]],
+                    stock.financials.loc[["Total Revenue", "EBIT", "Net Income", "Basic EPS"]],
+                    stock.cash_flow.loc[["Free Cash Flow", "Financing Cash Flow", "Investing Cash Flow", "Operating Cash Flow"]]])
+    financial_info = financial_info.to_html(classes='table table-bordered table-striped')
+    return render_template("financial_info.html", company_name=company_name, financial_info=financial_info)
 
 @fund.route("/stock_info", methods=["GET", "POST"])
 def stock_info():
