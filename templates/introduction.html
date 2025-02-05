@@ -6,7 +6,7 @@
 <body>
     <div class="container">
         <h4>Basic Introduction for: {{company_name}}</h4>
-        <p>{{company_info}}</p>
+        <table>{{company_info|safe}}</table>
         <form action="/info" method="post">
             <p><input type="submit" value="Company Information"></p>
         </form>

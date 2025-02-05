@@ -2,14 +2,51 @@ from flask import Flask, render_template, request,session
 import yfinance as yf
 import pandas as pd
 import google.generativeai as genai
-#from bs4 import BeautifulSoup
-#from datetime import datetime
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import os
+from prettytable import PrettyTable
 api=os.getenv("makersuite")
 genai.configure(api_key=api)
 model=genai.GenerativeModel('gemini-1.5-flash')
 fund=Flask(__name__)
 fund.secret_key="ccmccxbnhh"
+
+def plot_stock_price(stock_code):
+    stock=yf.Ticker(stock_code)
+    hist=stock.history(period="1y")
+    if hist.empty:
+        return None
+    img_dir = "static"
+    if not os.path.exists(img_dir):
+        os.makedirs(img_dir)
+    plt.figure(figsize=(10, 5))
+    plt.plot(hist.index, hist['Close'], label=f"{stock_code} Closing Price", color='blue')
+    plt.title(f"{stock_code} Stock Price (Last 1 Year)")
+    plt.xlabel("Date")
+    plt.ylabel("Closing Price (USD)")
+    plt.legend()
+    plt.grid(True)
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    plt.xticks(rotation=45)
+    img_path = os.path.join(img_dir, f"{stock_code}_stock.png")
+    plt.savefig(img_path)
+    plt.close()
+    return f"/{img_path}" 
+
+def get_basic_company_info(stock_code):
+    stock=yf.Ticker(stock_code)
+    table = PrettyTable()
+    table.field_names = ["Attribute", "Value"]
+    table.add_row(["Stock Code", stock_code])
+    table.add_row(["Company Name", stock.info.get('longName', 'N/A')])
+    table.add_row(["Sector",stock.info.get('sector', 'N/A')])
+    table.add_row(["Industry", stock.info.get('industry', 'N/A')])
+    table.add_row(["Employees",stock.info.get('fullTimeEmployees', 'N/A')])
+    table.add_row(["Company Summary",stock.info.get('longBusinessSummary', 'N/A')[:200] + "..."])
+    table.add_row(["Website",stock.info.get('website', 'N/A')])
+    return table.get_html_string()
+
 @fund.route("/", methods=["GET", "POST"])
 def index():
     return render_template("index.html")
@@ -34,7 +71,7 @@ def introduction():
     stock_code=session.get("stock_code")
     stock=yf.Ticker(stock_code)
     company_name=stock.info.get("longName","N/A")
-    company_info=stock.info.get("longBusinessSummary","N/A")
+    company_info = get_basic_company_info(stock_code)
     return (render_template("introduction.html",company_name=company_name,company_info=company_info))
 
 @fund.route("/financial_info", methods=["GET", "POST"])
@@ -65,7 +102,8 @@ def stock_info():
         "ROE": stock.info.get("returnOnEquity","N/A")}
     stock_df = pd.DataFrame.from_dict(stock_info, orient="index", columns=["Value"])
     stock_html=stock_df.to_html(classes='table table-bordered table-striped')
-    return (render_template("stock_info.html",company_name=company_name,stock_info=stock_html))
+    img_path=plot_stock_price(stock_code)
+    return (render_template("stock_info.html",company_name=company_name,stock_code=stock_code,stock_info=stock_html,img=img_path))
 
 @fund.route("/homepage", methods=["GET", "POST"])
 def homepage():
