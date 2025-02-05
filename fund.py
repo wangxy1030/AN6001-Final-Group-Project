@@ -9,6 +9,7 @@ import io
 import base64
 from prettytable import PrettyTable
 import market_sentiment
+import markdown
 api = "AIzaSyCmzFIXPikSrximyftTJBJMkjkJ0ViqBpc"
 genai.configure(api_key=api)
 model=genai.GenerativeModel('gemini-1.5-flash')
@@ -123,10 +124,6 @@ def stock_info():
                            stock_info=stock_html, 
                            img=img_base64)
 
-@fund.route("/homepage", methods=["GET", "POST"])
-def homepage():
-    return render_template("main.html")
-
 @fund.route('/ms', methods=['GET', 'POST'])
 def ms():
     stock_code = session.get("stock_code")
@@ -144,13 +141,18 @@ def ms():
 
 @fund.route("/genAI", methods=["GET", "POST"])
 def genAI():
-    return render_template("genAI.html")
+    return render_template("genAI.html", r=None)
 
-@fund.route("/genAI_result", methods=["GET", "POST"])
+@fund.route("/genAI_result", methods=["POST"])
 def genAI_result():
-    q=request.form.get("q")
-    r=model.generate_content(q).candidates[0].content.parts[0].text
-    return (render_template("genAI_result.html",r=r))
+    q = request.form.get("q")  # 获取用户输入的问题
+    r = model.generate_content(q).candidates[0].content.parts[0].text  # 获取生成的回答
+
+    # 将AI回复的纯文本转换为HTML格式
+    r_html = markdown.markdown(r)
+
+    # 渲染页面并传递回答r_html
+    return render_template("genAI.html", r=r_html)
 
 @fund.route("/investment", methods=["GET", "POST"])
 def investment():
