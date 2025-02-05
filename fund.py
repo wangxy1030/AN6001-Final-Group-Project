@@ -125,8 +125,21 @@ def genAI_result():
 
 @fund.route("/investment", methods=["GET", "POST"])
 def investment():
-    return render_template("investment.html")
+    stock_code=session.get("stock_code")
+    stock=yf.Ticker(stock_code)
+    company_name=stock.info.get("longName","N/A")
+    currentPrice=stock.info.get("currentPrice","N/A")
+    return render_template("investment.html",currentPrice=currentPrice,company_name=company_name)
 
+@fund.route("/investment_result", methods=["GET", "POST"])
+def investment():
+    stock_code=session.get("stock_code")
+    stock=yf.Ticker(stock_code)
+    company_name=stock.info.get("longName","N/A")
+    currentPrice=stock.info.get("currentPrice","N/A")
+    amount=request.form.get("q")
+    quantity=amount/currentPrice
+    return (render_template("investment.html",amount=amount,company_name=company_name,quantity=quantity))
 if __name__ == "__main__":
     fund.run()
 
