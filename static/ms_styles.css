@@ -42,7 +42,7 @@ input[type="text"] {
 }
 
 button {
-    background-color: #007bff;
+    background-color: #7D1713;
     color: white;
     padding: 12px 24px;
     border: none;
@@ -53,7 +53,7 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #7D1713;
 }
 
 .error-message {
@@ -81,7 +81,7 @@ button:hover {
 }
 
 .news-item a {
-    color: #007bff;
+    color: #7D1713;
     text-decoration: none;
 }
 
