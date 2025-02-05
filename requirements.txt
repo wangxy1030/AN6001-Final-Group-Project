@@ -5,4 +5,3 @@ pandas
 matplotlib
 prettytable
 google.generativeai
-os
