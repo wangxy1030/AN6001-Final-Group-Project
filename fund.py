@@ -10,12 +10,12 @@ import base64
 from prettytable import PrettyTable
 import market_sentiment
 import markdown
-api = "AIzaSyCmzFIXPikSrximyftTJBJMkjkJ0ViqBpc"
-genai.configure(api_key=api)
-model=genai.GenerativeModel('gemini-1.5-flash')
-fund=Flask(__name__)
-fund.secret_key="ccmccxbnhh"
 
+api = os.getenv("makersuite")
+genai.configure(api_key = api)
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+fund=Flask(__name__)
 
 def plot_stock_price(stock_code):
     stock = yf.Ticker(stock_code)
