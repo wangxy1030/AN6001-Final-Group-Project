@@ -1,6 +1,25 @@
 <head>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
+    <script>
+        function confirmInvestment(event) {
+            event.preventDefault();
+            let amount = document.querySelector('input[name="q"]').value.trim();
+            let price = parseFloat("{{ currentPrice }}");
+            
+            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                alert("Please enter a valid investment amount!");
+                return;
+            }
+
+            let quantity = (parseFloat(amount) / price).toFixed(2);
+            let confirmation = confirm(`Please confirm: You are investing ${amount} USD (≈ ${quantity} shares).`);
+            
+            if (confirmation) {
+                document.getElementById("investmentForm").submit();
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -8,10 +27,10 @@
         <h2>Make Investment</h2>
         <h3>Current stock price of {{company_name}} is {{currentPrice}} USD</h3>
         <h3>Please enter the amount you want to invest:</h3>
-        <form action="/investment_result" method="post">
+        <form id="investmentForm" action="/investment_result" method="post">
             <p><input type="text" name="q"></p>
             <h3>USD</h3>
-            <p><input type="submit" value="Confirm"></p>
+            <p><input type="submit" value="Confirm" onclick="confirmInvestment(event)"></p>
         </form>
         <form action="/main" method="get">
             <p><input type="submit" value="Main"></p>
